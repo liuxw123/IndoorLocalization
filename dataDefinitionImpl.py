@@ -6,10 +6,11 @@
 # Github : https://github.com/liuxw123
 
 from DataOprt.dataset import DataSet
-from values.values import NUM_TIMES, NUM_ANTENNA, IS_COMPLEX
+from values.values import NUM_TIMES, NUM_ANTENNA, IS_COMPLEX, NUM_POINT
 from dataDefinition import DataDefinition
 from modelConfig import DELIMITER
-from values.strings import VERSION_NOT_SUPPORTED
+from values.strings import VERSION_NOT_SUPPORTED, KEY_LOGGING_DATA_HANDLER, KEY_LOGGING_DATA_INPUT, \
+    KEY_LOGGING_DATA_TARGET, KEY_LOGGING_DATA_TRAIN_RATE, KEY_LOGGING_DATA_SHUFFLE, KEY_LOGGING_DATA_CLASSES
 
 import numpy as np
 
@@ -29,8 +30,9 @@ class DataDefinitionImplV0(DataDefinition):
         :return: 返回出必要的记录信息
         """
         # TODO details
-        info = {"name": type(self).__name__, "input": "CSI data(dimension: 16[8*2]).", "target": "one-hot (3 classes).",
-                "rate": self.train, "shuffle": self.shuffle, "classes": self.classes}
+        info = {KEY_LOGGING_DATA_HANDLER: type(self).__name__, KEY_LOGGING_DATA_INPUT: "CSI data(dimension: 16[8*2]).",
+                KEY_LOGGING_DATA_TARGET: "one-hot (3 classes).", KEY_LOGGING_DATA_TRAIN_RATE: self.train,
+                KEY_LOGGING_DATA_SHUFFLE: self.shuffle, KEY_LOGGING_DATA_CLASSES: self.classes}
 
         return info
 
@@ -79,7 +81,23 @@ class DataDefinitionImplV0(DataDefinition):
         class2 = [x for x in range(157, 204)]
         class3 = [x for x in range(216, 264)]
 
-        self.classes = [class1, class2, class3]
+        unused = []
+
+        for i in range(NUM_POINT):
+
+            if class1.__contains__(i):
+                continue
+
+            if class2.__contains__(i):
+                continue
+
+            if class3.__contains__(i):
+                continue
+
+            unused.append(i)
+
+
+        self.classes = [class1, class2, class3, unused]
 
         return class1, class2, class3
 

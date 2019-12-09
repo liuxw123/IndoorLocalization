@@ -64,7 +64,7 @@ class PstModelV0(ModelInterface):
 
     def details(self):
         # TODO details
-        info = {"name": type(self).__name__, "hidden layer": LAYER}
+        info = {"model handler class": type(self).__name__, "hidden layer": LAYER}
         return info
 
     def forward(self, x):

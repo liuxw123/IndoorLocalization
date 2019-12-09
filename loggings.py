@@ -15,10 +15,16 @@ class ResultLog(Common, metaclass=ABCMeta):
         super().__init__()
         self.checkKey(key)
         self.log = {}
+        self.logStr = ""
 
 
     def details(self):
         pass
+
+    def write(self, filePath):
+        fw = open(filePath, "w+")
+        fw.writelines(self.logStr)
+        fw.close()
 
     @abstractmethod
     def logging(self) -> None:

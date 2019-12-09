@@ -16,10 +16,14 @@ from torch.optim import Adam
 import torch
 
 # parameters
+from values.strings import KEY_LOGGING_RESULT, KEY_LOGGING_MODEL, KEY_LOGGING_DATA, KEY_LOGGING_MODEL_BATCH, \
+    KEY_LOGGING_MODEL_OPTIMIZER, KEY_LOGGING_MODEL_LR, KEY_LOGGING_MODEL_EPOCH, KEY_LOGGING_MODEL_LOSS_FUNCTION, \
+    KEY_LOGGING_RESULT_ACC, KEY_LOGGING_RESULT_LOSS
+
 TRAIN_RATE = 0.9
 BATCH_SIZE = 32
 LR = 0.001
-EPOCH = 200
+EPOCH = 50
 ADJUST_EPOCH = [30, 70]
 
 dataSet = TrainData(TRAIN_RATE, KEY)  # default is train phase
@@ -43,15 +47,21 @@ def adjustLearningRate(epoch):
         para['lr'] = lr
 
 
-def logging():
+def loggingBefore():
     info1 = dataSet.dataHolder.details()
     info2 = model.details()
 
-    info3 = {"batch": BATCH_SIZE, "optimizer": type(optimizer).__name__, "lr": LR, "epoch": EPOCH,
-             "loss function": type(lossFunc).__name__}
+    info3 = {KEY_LOGGING_MODEL_BATCH: BATCH_SIZE, KEY_LOGGING_MODEL_OPTIMIZER: type(optimizer).__name__,
+             KEY_LOGGING_MODEL_LR: LR, KEY_LOGGING_MODEL_EPOCH: EPOCH,
+             KEY_LOGGING_MODEL_LOSS_FUNCTION: type(lossFunc).__name__}
 
-    logger.add("Data", info1)
-    logger.add("Model", {**info2, **info3})
+    logger.add(KEY_LOGGING_DATA, info1)
+    logger.add(KEY_LOGGING_MODEL, {**info2, **info3})
+
+
+def loggingAfter(acc, loss):
+    info = {KEY_LOGGING_RESULT_ACC: acc, KEY_LOGGING_RESULT_LOSS: loss}
+    logger.add(KEY_LOGGING_RESULT, info)
 
 
 def save():
@@ -63,13 +73,17 @@ def test():
     model.eval()
     nSum = 0
     nCor = 0
-    for (x, y) in dataLoader:
+    losses = 0
+    for cnt, (x, y) in enumerate(dataLoader):
         out = model(x)
         predict = out.max(dim=1)[1]
         nSum += y.shape[0]
         nCor += torch.sum(predict == y)
 
-    return nCor.item() / nSum
+        loss = lossFunc(out, y)
+        losses += loss.item()
+
+    return nCor.item() / nSum, losses / cnt
 
 
 def train(epoch) -> float:
@@ -91,13 +105,18 @@ def train(epoch) -> float:
 
 
 def main(numEpoch):
-    for epoch in range(numEpoch):
-        loss = train(epoch)
-        accuracy = test()
+    loggingBefore()
 
-        print("Epoch: {:>3d} loss: {:.4f} test accuracy: {:.2f}%".format(epoch, loss, accuracy * 100))
+    for epoch in range(numEpoch):
+        loss1 = train(epoch)
+        accuracy, loss2 = test()
+
+        print("Epoch: {:>3d} loss: {:.4f} test accuracy: {:.2f}%  test loss: {:.4f}".
+              format(epoch, loss1, accuracy * 100, loss2))
+
+    loggingAfter(accuracy, loss2)
 
 
 if __name__ == '__main__':
-    logging()
     main(EPOCH)
+    logger.logging()
