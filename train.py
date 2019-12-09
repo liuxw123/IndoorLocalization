@@ -8,6 +8,8 @@
 from modelConfig import KEY
 from modelDefinitionImpl import PstModelV0
 from trainData import TrainData, collate
+from loggingImpl import LoggingImpl
+
 from torch.utils.data import DataLoader
 from torch.nn import CrossEntropyLoss
 from torch.optim import Adam
@@ -27,6 +29,8 @@ lossFunc = CrossEntropyLoss()
 model = PstModelV0(KEY)
 optimizer = Adam(model.parameters(), lr=LR, weight_decay=0.0001)
 
+logger = LoggingImpl(KEY)
+
 
 def adjustLearningRate(epoch):
     if epoch not in ADJUST_EPOCH:
@@ -39,13 +43,15 @@ def adjustLearningRate(epoch):
         para['lr'] = lr
 
 
-def log():
+def logging():
     info1 = dataSet.dataHolder.details()
     info2 = model.details()
 
     info3 = {"batch": BATCH_SIZE, "optimizer": type(optimizer).__name__, "lr": LR, "epoch": EPOCH,
              "loss function": type(lossFunc).__name__}
-    return info1, info2, info3
+
+    logger.add("Data", info1)
+    logger.add("Model", {**info2, **info3})
 
 
 def save():
@@ -93,5 +99,5 @@ def main(numEpoch):
 
 
 if __name__ == '__main__':
+    logging()
     main(EPOCH)
-    # log()
