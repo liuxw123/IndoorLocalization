@@ -259,7 +259,7 @@ class DataDefinitionImplV0D2(DataDefinitionImplV0):
         class3 = [x for x in range(93, 101)]
         for x in range(111, 127):
             class3.append(x)
-        class4 = [x for x in range(152, 204)]
+        class4 = [x for x in range(145, 204)]
         class5 = [x for x in range(216, 264)]
 
         unused = []

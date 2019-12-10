@@ -63,7 +63,7 @@ class LoggingImpl(ResultLog):
         for i, clazz in enumerate(classes):
             self.logStr += " " * LOGGING_BLANK_NUM + "class {}: {} dots ".format(i, len(clazz)) + arrayString(clazz) + LINE_BREAK
 
-        self.logStr += " " * LOGGING_BLANK_NUM + "unused: " + arrayString(unused) + LINE_BREAK
+        self.logStr += " " * LOGGING_BLANK_NUM + "unused: {} dots ".format(len(unused)) + arrayString(unused) + LINE_BREAK
 
         self.logStr += EQUALS_DELIMITER * LOGGING_EQUALS_DELIMITER + LINE_BREAK
         self.logStr += LINE_BREAK
