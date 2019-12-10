@@ -6,7 +6,7 @@
 # Github : https://github.com/liuxw123
 
 from modelDefinition import ModelInterface
-from modelConfig import DELIMITER, LAYER
+from modelConfig import DELIMITER, LAYER, DROPOUT_LAYER, DROPOUT_PARAMETER
 from values.strings import VERSION_NOT_SUPPORTED, KEY_LOGGING_MODEL_HANDLER, KEY_LOGGING_MODEL_HIDDEN_LAYER, \
     KEY_LOGGING_MODEL_LAYERS
 
@@ -87,3 +87,47 @@ class PstModelV0(ModelInterface):
             x = layer(x)
 
         return x
+
+
+class PstModelV0M1(PstModelV0):
+    """
+        TODO input right key
+
+        v0: version. 说明这是一个多分类定义模型
+        1 : modelVersion. 模型为第1次定义
+        """
+    KEY = "v0-x-1-x"
+
+    def checkKey(self, key: str) -> None:
+
+        version1, _, modelVersion1, _ = key.split(DELIMITER)
+        version2, _, modelVersion2, _ = PstModelV0M1.KEY.split(DELIMITER)
+
+        # TODO check key
+        if version1 == version2 and modelVersion1 == modelVersion2:
+            return
+        else:
+            raise ValueError(VERSION_NOT_SUPPORTED)
+
+    def creatModel(self, key: str) -> None:
+        self.checkKey(key)
+
+        hidden = LAYER
+        drop = DROPOUT_LAYER
+        dropPara = DROPOUT_PARAMETER
+
+        part = []
+
+        for i in range(len(hidden) - 2):
+            inChn = hidden[i]
+            outChn = hidden[i + 1]
+
+            if i in drop:
+                part.append(nn.Dropout(dropPara[drop.index(i)]))
+            part.append(nn.Linear(inChn, outChn))
+            part.append(nn.ReLU())
+
+        part.append(nn.Linear(hidden[-2], hidden[-1]))
+        part.append(nn.Softmax(dim=1))
+
+        self.model = nn.ModuleList(part)

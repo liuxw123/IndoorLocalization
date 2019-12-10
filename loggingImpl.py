@@ -7,6 +7,7 @@
 from DataOprt.plot import PstDataSet
 from DataOprt.utils import arrayString, getDirectory
 from loggings import ResultLog
+from modelConfig import KEY
 from values.strings import DELIMITER, VERSION_NOT_SUPPORTED, KEY_LOGGING_DATA, KEY_LOGGING_MODEL, KEY_LOGGING_RESULT, \
     EQUALS_DELIMITER, LINE_BREAK, KEY_LOGGING_DATA_HANDLER, CONTENT_DELIMITER, KEY_LOGGING_DATA_INPUT, \
     KEY_LOGGING_DATA_TARGET, KEY_LOGGING_DATA_TRAIN_RATE, KEY_LOGGING_DATA_SHUFFLE, KEY_LOGGING_DATA_CLASSES, \
@@ -32,6 +33,12 @@ class LoggingImpl(ResultLog):
     def __init__(self, key: str) -> None:
         super().__init__(key)
         self.plot = PstDataSet()
+
+    def loggingBefore(self):
+        self.logStr += "key" + CONTENT_DELIMITER + KEY + LINE_BREAK
+        self.logStr += "author" + CONTENT_DELIMITER + "lxw" + LINE_BREAK
+        self.logStr += "time" + CONTENT_DELIMITER + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + LINE_BREAK
+        self.logStr += LINE_BREAK
 
     def loggingData(self, plotFile: str):
         left = (LOGGING_EQUALS_DELIMITER - len(KEY_LOGGING_DATA)) // 2
@@ -133,6 +140,7 @@ class LoggingImpl(ResultLog):
     def logging(self):
         path = self.createResultDirectory()
         os.mkdir(PATH_RESULT + path)
+        self.loggingBefore()
         self.loggingData(PATH_RESULT + path + PATH_RESULT_PNG)
         self.loggingModel()
         self.loggingResult(PATH_RESULT + path + PATH_RESULT_MODEL)
@@ -141,10 +149,10 @@ class LoggingImpl(ResultLog):
 
     def checkKey(self, key: str) -> None:
         # TODO check key
-        version1, sub1, modelVersion1, dataVersion1 = key.split(DELIMITER)
-        version2, sub2, modelVersion2, dataVersion2 = LoggingImpl.KEY.split(DELIMITER)
+        version1, _, _, _ = key.split(DELIMITER)
+        version2, _, _, _ = LoggingImpl.KEY.split(DELIMITER)
 
-        if version1 == version2 and sub1 == sub2 and modelVersion1 == modelVersion2 and dataVersion1 == dataVersion2:
+        if version1 == version2:
             return
         else:
             raise ValueError(VERSION_NOT_SUPPORTED)

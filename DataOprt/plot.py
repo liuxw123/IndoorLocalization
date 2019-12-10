@@ -141,7 +141,7 @@ class PstDataSet:
 
         self.plotCommon()
         plt.savefig(file, bbox_inches='tight', pad_inches=0)
-        plt.show()
+        # plt.show()
 
 # usage
 # dataset = PstDataSet()

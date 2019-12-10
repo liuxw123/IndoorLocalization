@@ -6,7 +6,7 @@
 # Github : https://github.com/liuxw123
 
 from modelConfig import KEY
-from modelDefinitionImpl import PstModelV0
+from modelDefinitionImpl import PstModelV0M1
 from trainData import TrainData, collate
 from loggingImpl import LoggingImpl
 
@@ -23,14 +23,15 @@ from values.strings import KEY_LOGGING_RESULT, KEY_LOGGING_MODEL, KEY_LOGGING_DA
 TRAIN_RATE = 0.9
 BATCH_SIZE = 32
 LR = 0.001
-EPOCH = 50
-ADJUST_EPOCH = [30, 70]
+EPOCH = 1000
+ADJUST_EPOCH = [200, 500]
 
 dataSet = TrainData(TRAIN_RATE, KEY)  # default is train phase
 dataLoader = DataLoader(dataSet, batch_size=BATCH_SIZE, shuffle=True, num_workers=0, collate_fn=collate)
 lossFunc = CrossEntropyLoss()
 
-model = PstModelV0(KEY)
+# TODO choose right model
+model = PstModelV0M1(KEY)
 optimizer = Adam(model.parameters(), lr=LR, weight_decay=0.0001)
 
 logger = LoggingImpl(KEY)
@@ -107,15 +108,21 @@ def train(epoch) -> float:
 
 def main(numEpoch):
     loggingBefore()
-
+    bestAcc = 0
+    bestLoss = 10000
     for epoch in range(numEpoch):
         loss1 = train(epoch)
         accuracy, loss2 = test()
 
+        if accuracy >= bestAcc and loss2 <= bestLoss:
+            bestAcc = accuracy
+            bestLoss = loss2
+            loggingAfter(accuracy, loss2)
+
         print("Epoch: {:>3d} loss: {:.4f} test accuracy: {:.2f}%  test loss: {:.4f}".
               format(epoch, loss1, accuracy * 100, loss2))
 
-    loggingAfter(accuracy, loss2)
+
 
 
 if __name__ == '__main__':
