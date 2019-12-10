@@ -14,10 +14,11 @@ class Common(metaclass=ABCMeta):
         self.string = ""
 
     @abstractmethod
-    def checkKey(self, key: str) -> None:
+    def checkKey(self, key1: str, key2: str) -> None:
         """
         check key,查看此类是否能用于目标Key，不匹配，说明此类不可使用
-        :param key: dst key
+        :param key1: key1
+        :param key2: key2
         :return:
         """
         pass

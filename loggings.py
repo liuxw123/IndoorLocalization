@@ -42,4 +42,9 @@ class ResultLog(Common, metaclass=ABCMeta):
         :return:
         """
         assert key in ["Data", "Model", "Result"]
-        self.log[key] = val
+
+        if key in self.log.keys():
+            val1 = self.log[key]
+            self.log[key] = {**val1, **val}
+        else:
+            self.log[key] = val

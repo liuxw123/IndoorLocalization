@@ -100,7 +100,7 @@ class PstDataSet:
 
     def plotMultiClasses(self, classes: list, file) -> None:
         fig = plt.figure(figsize=(13, 6.5))
-        colors = ["r", "b", "y", "g", "k"]
+        colors = ["r", "b", "y", "g", "c", "m", "k"]
         dotShape = "x"
 
         for i, clazz in enumerate(classes):

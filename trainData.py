@@ -7,7 +7,7 @@
 
 from torch.utils.data import Dataset
 
-from dataDefinitionImpl import DataDefinitionImplV0
+from dataDefinitionImpl import DataDefinitionImplV0D2
 
 import torch
 import numpy as np
@@ -21,9 +21,9 @@ class TrainData(Dataset):
     def __init__(self, trainRate: float, key: str) -> None:
         super().__init__()
 
-        self.dataHolder = DataDefinitionImplV0(trainRate)
-
         # TODO choose right data process class
+        self.dataHolder = DataDefinitionImplV0D2(trainRate)
+
         self.xTrain, self.yTrain, self.xTest, self.yTest = self.dataHolder.getData(key)
 
         # training phase: train or test

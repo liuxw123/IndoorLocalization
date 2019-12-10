@@ -61,7 +61,7 @@ class LoggingImpl(ResultLog):
 
         unused = classes.pop()
         for i, clazz in enumerate(classes):
-            self.logStr += " " * LOGGING_BLANK_NUM + "class {}: ".format(i) + arrayString(clazz) + LINE_BREAK
+            self.logStr += " " * LOGGING_BLANK_NUM + "class {}: {} dots ".format(i, len(clazz)) + arrayString(clazz) + LINE_BREAK
 
         self.logStr += " " * LOGGING_BLANK_NUM + "unused: " + arrayString(unused) + LINE_BREAK
 

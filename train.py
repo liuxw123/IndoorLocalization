@@ -18,7 +18,8 @@ import torch
 # parameters
 from values.strings import KEY_LOGGING_RESULT, KEY_LOGGING_MODEL, KEY_LOGGING_DATA, KEY_LOGGING_MODEL_BATCH, \
     KEY_LOGGING_MODEL_OPTIMIZER, KEY_LOGGING_MODEL_LR, KEY_LOGGING_MODEL_EPOCH, KEY_LOGGING_MODEL_LOSS_FUNCTION, \
-    KEY_LOGGING_RESULT_ACC, KEY_LOGGING_RESULT_LOSS, KEY_LOGGING_RESULT_MODEL_PATH, KEY_LOGGING_RESULT_MODEL_PARAMETER
+    KEY_LOGGING_RESULT_ACC, KEY_LOGGING_RESULT_LOSS, KEY_LOGGING_RESULT_MODEL_PATH, KEY_LOGGING_RESULT_MODEL_PARAMETER, \
+    KEY_LOGGING_RESULT_FINAL_ACC, KEY_LOGGING_RESULT_FINAL_LOSS
 
 TRAIN_RATE = 0.9
 BATCH_SIZE = 32
@@ -62,6 +63,12 @@ def loggingBefore():
 
 def loggingAfter(acc, loss):
     info = {KEY_LOGGING_RESULT_ACC: acc * 100, KEY_LOGGING_RESULT_LOSS: loss,
+            KEY_LOGGING_RESULT_MODEL_PARAMETER: model.state_dict()}
+    logger.add(KEY_LOGGING_RESULT, info)
+
+
+def loggingFinnal(acc, loss):
+    info = {KEY_LOGGING_RESULT_FINAL_ACC: acc * 100, KEY_LOGGING_RESULT_FINAL_LOSS: loss,
             KEY_LOGGING_RESULT_MODEL_PARAMETER: model.state_dict()}
     logger.add(KEY_LOGGING_RESULT, info)
 
@@ -121,8 +128,6 @@ def main(numEpoch):
 
         print("Epoch: {:>3d} loss: {:.4f} test accuracy: {:.2f}%  test loss: {:.4f}".
               format(epoch, loss1, accuracy * 100, loss2))
-
-
 
 
 if __name__ == '__main__':

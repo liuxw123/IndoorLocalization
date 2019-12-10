@@ -71,7 +71,7 @@ def arrayString(arr: list, connectChar=", ") -> str:
     try:
         string = string[:-2] + "]"
     except Exception:
-        string = "[]"
+        string = "none"
     return string
 
 
