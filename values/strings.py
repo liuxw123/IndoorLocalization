@@ -6,6 +6,7 @@
 # Github : https://github.com/liuxw123
 
 DELIMITER = "-"
+FILE_DELIMITER = "/"
 EQUALS_DELIMITER = "="
 LINE_BREAK = "\n"
 CONTENT_DELIMITER = ": "
@@ -36,6 +37,8 @@ KEY_LOGGING_RESULT = "Result"
 
 KEY_LOGGING_RESULT_ACC = "test accuracy"
 KEY_LOGGING_RESULT_LOSS = "test loss"
+KEY_LOGGING_RESULT_MODEL_PATH = "model path"
+KEY_LOGGING_RESULT_MODEL_PARAMETER = "model"
 
 # 文件夹相关变量
 # 原始数据文件夹
@@ -43,3 +46,6 @@ PATH_ORIG_DATA = "DataOprt/data/data"
 PATH_POSITION_DATA = "data/position.txt"
 
 PATH_RESULT = "result"
+PATH_RESULT_TXT = "/sum.txt"
+PATH_RESULT_PNG = "/class.png"
+PATH_RESULT_MODEL = "/model.pth"

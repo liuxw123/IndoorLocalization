@@ -4,16 +4,20 @@
 # IDE : PyCharm
 # Description : loggings的实现类
 # Github : https://github.com/liuxw123
-from DataOprt.utils import arrayString
+from DataOprt.utils import arrayString, getDirectory
 from loggings import ResultLog
 from values.strings import DELIMITER, VERSION_NOT_SUPPORTED, KEY_LOGGING_DATA, KEY_LOGGING_MODEL, KEY_LOGGING_RESULT, \
     EQUALS_DELIMITER, LINE_BREAK, KEY_LOGGING_DATA_HANDLER, CONTENT_DELIMITER, KEY_LOGGING_DATA_INPUT, \
     KEY_LOGGING_DATA_TARGET, KEY_LOGGING_DATA_TRAIN_RATE, KEY_LOGGING_DATA_SHUFFLE, KEY_LOGGING_DATA_CLASSES, \
     KEY_LOGGING_MODEL_HANDLER, KEY_LOGGING_MODEL_HIDDEN_LAYER, KEY_LOGGING_MODEL_BATCH, KEY_LOGGING_MODEL_OPTIMIZER, \
     KEY_LOGGING_MODEL_LR, KEY_LOGGING_MODEL_EPOCH, KEY_LOGGING_MODEL_LOSS_FUNCTION, KEY_LOGGING_RESULT_ACC, \
-    KEY_LOGGING_RESULT_LOSS
+    KEY_LOGGING_RESULT_LOSS, PATH_RESULT, FILE_DELIMITER, PATH_RESULT_TXT, PATH_RESULT_MODEL, \
+    KEY_LOGGING_RESULT_MODEL_PATH, KEY_LOGGING_RESULT_MODEL_PARAMETER
 from values.values import LOGGING_EQUALS_DELIMITER, NUM_POINT, LOGGING_BLANK_NUM
 
+import os
+import time
+import torch
 
 class LoggingImpl(ResultLog):
     """
@@ -57,7 +61,7 @@ class LoggingImpl(ResultLog):
 
         self.logStr += KEY_LOGGING_MODEL_HANDLER + CONTENT_DELIMITER + info[KEY_LOGGING_MODEL_HANDLER] + LINE_BREAK
         self.logStr += KEY_LOGGING_MODEL_HIDDEN_LAYER + CONTENT_DELIMITER + arrayString(
-            info[KEY_LOGGING_MODEL_HIDDEN_LAYER], connectChar=DELIMITER) + LINE_BREAK
+            info[KEY_LOGGING_MODEL_HIDDEN_LAYER], connectChar=DELIMITER+DELIMITER) + LINE_BREAK
         self.logStr += KEY_LOGGING_MODEL_BATCH + CONTENT_DELIMITER + "{}".format(
             info[KEY_LOGGING_MODEL_BATCH]) + LINE_BREAK
         self.logStr += KEY_LOGGING_MODEL_OPTIMIZER + CONTENT_DELIMITER + info[KEY_LOGGING_MODEL_OPTIMIZER] + LINE_BREAK
@@ -70,7 +74,7 @@ class LoggingImpl(ResultLog):
         self.logStr += EQUALS_DELIMITER * LOGGING_EQUALS_DELIMITER + LINE_BREAK
         self.logStr += LINE_BREAK
 
-    def loggingResult(self):
+    def loggingResult(self, modelPath):
 
         left = (LOGGING_EQUALS_DELIMITER - len(KEY_LOGGING_RESULT)) // 2
         right = LOGGING_EQUALS_DELIMITER - len(KEY_LOGGING_RESULT) - left
@@ -82,15 +86,49 @@ class LoggingImpl(ResultLog):
         self.logStr += KEY_LOGGING_RESULT_LOSS + CONTENT_DELIMITER + "{:.4f}".format(
             info[KEY_LOGGING_RESULT_LOSS]) + LINE_BREAK
 
+        self.logStr += KEY_LOGGING_RESULT_MODEL_PATH + CONTENT_DELIMITER + modelPath + LINE_BREAK
+
+        torch.save(info[KEY_LOGGING_RESULT_MODEL_PARAMETER], modelPath)
+
         self.logStr += EQUALS_DELIMITER * LOGGING_EQUALS_DELIMITER + LINE_BREAK
         self.logStr += LINE_BREAK
 
+
+
+    @staticmethod
+    def createResultDirectory():
+
+        if not os.path.exists(PATH_RESULT):
+            os.mkdir(PATH_RESULT)
+
+        dirs = getDirectory(PATH_RESULT)
+        total = {}
+
+        for item in dirs:
+            key = item.split(DELIMITER)[0]
+
+            try:
+                total[key] += 1
+            except Exception:
+                total[key] = 1
+
+        timeKey = time.strftime("%Y%m%d", time.localtime())
+
+        try:
+            num = total[timeKey]
+        except Exception:
+            num = 0
+
+        return FILE_DELIMITER + timeKey + "_{}".format(num)
+
     def logging(self):
+        path = self.createResultDirectory()
+        os.mkdir(PATH_RESULT + path)
         self.loggingData()
         self.loggingModel()
-        self.loggingResult()
+        self.loggingResult(PATH_RESULT + path + PATH_RESULT_MODEL)
         # TODO file path
-        self.write("none")
+        self.write(PATH_RESULT + path + PATH_RESULT_TXT)
 
     def checkKey(self, key: str) -> None:
         # TODO check key

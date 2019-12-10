@@ -5,6 +5,11 @@
 # Description : 一些小工具函数
 # Github : https://github.com/liuxw123
 
+import os
+import re
+
+from values.strings import FILE_DELIMITER
+
 
 def readFile(file) -> list:
     """
@@ -52,7 +57,7 @@ def stripBlankSpace(string: str, mode=0) -> str:
         return string[:cnt + 1]
 
 
-def arrayString(arr: list, connectChar=" ") -> str:
+def arrayString(arr: list, connectChar=", ") -> str:
     """
     实数序列字符串
     :param arr: 实数序列
@@ -62,9 +67,27 @@ def arrayString(arr: list, connectChar=" ") -> str:
     string = "["
 
     for num in arr:
-        string += "{},".format(num) + connectChar
+        string += "{}".format(num) + connectChar
     try:
         string = string[:-2] + "]"
     except Exception:
         string = "[]"
     return string
+
+
+def match(pattern, string):
+    ans = re.search(pattern, string)
+
+    return ans is not None
+
+
+def getDirectory(root):
+    files = []
+    for file in os.listdir(root):
+        if os.path.isdir(root + FILE_DELIMITER + file) and match(r'^[0-9a-zA-Z]+$', file):
+            files.append(file)
+    return files
+
+
+
+
