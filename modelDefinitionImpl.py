@@ -7,7 +7,8 @@
 
 from modelDefinition import ModelInterface
 from modelConfig import DELIMITER, LAYER
-from values.strings import VERSION_NOT_SUPPORTED
+from values.strings import VERSION_NOT_SUPPORTED, KEY_LOGGING_MODEL_HANDLER, KEY_LOGGING_MODEL_HIDDEN_LAYER, \
+    KEY_LOGGING_MODEL_LAYERS
 
 from torch import nn
 
@@ -20,6 +21,14 @@ class PstModelV0(ModelInterface):
     0 : modelVersion. 模型为第0次定义
     """
     KEY = "v0-x-0-x"
+
+    def hiddenLayerString(self) -> list:
+
+        cons = []
+        for layer in self.model:
+            cons.append(type(layer).__name__)
+
+        return cons
 
     def __init__(self, key: str) -> None:
         """
@@ -64,7 +73,8 @@ class PstModelV0(ModelInterface):
 
     def details(self):
         # TODO details
-        info = {"model handler class": type(self).__name__, "hidden layer": LAYER}
+        info = {KEY_LOGGING_MODEL_HANDLER: type(self).__name__, KEY_LOGGING_MODEL_HIDDEN_LAYER: LAYER,
+                KEY_LOGGING_MODEL_LAYERS: self.hiddenLayerString()}
         return info
 
     def forward(self, x):

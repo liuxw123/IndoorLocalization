@@ -6,6 +6,7 @@
 # Github : https://github.com/liuxw123
 
 DELIMITER = "-"
+UNDERLINE = "_"
 FILE_DELIMITER = "/"
 EQUALS_DELIMITER = "="
 LINE_BREAK = "\n"
@@ -26,6 +27,7 @@ KEY_LOGGING_MODEL = "Model"
 
 KEY_LOGGING_MODEL_HANDLER = "model handler class"
 KEY_LOGGING_MODEL_HIDDEN_LAYER = "hidden layer"
+KEY_LOGGING_MODEL_LAYERS = "layers"
 KEY_LOGGING_MODEL_BATCH = "batch size"
 KEY_LOGGING_MODEL_OPTIMIZER = "optimizer"
 KEY_LOGGING_MODEL_LR = "learning rate"
@@ -43,7 +45,7 @@ KEY_LOGGING_RESULT_MODEL_PARAMETER = "model"
 # 文件夹相关变量
 # 原始数据文件夹
 PATH_ORIG_DATA = "DataOprt/data/data"
-PATH_POSITION_DATA = "data/position.txt"
+PATH_POSITION_DATA = "DataOprt/data/position.txt"
 
 PATH_RESULT = "result"
 PATH_RESULT_TXT = "/sum.txt"

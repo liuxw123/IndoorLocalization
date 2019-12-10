@@ -5,8 +5,11 @@
 # Description : 位置点坐标可视化
 # Github : https://github.com/liuxw123
 import numpy as np
+import matplotlib.pyplot as plt
 
 from DataOprt.utils import readFile, stripBlankSpace
+from values.strings import PATH_POSITION_DATA
+from values.values import NUM_POINT
 
 
 class PstDataSet:
@@ -30,26 +33,7 @@ class PstDataSet:
             self.pstData[idx, 0] = xPos
             self.pstData[idx, 1] = yPos
 
-    def plot(self) -> None:
-        """
-        打印采集点坐标图
-        :return:
-        """
-        import matplotlib.pyplot as plt
-
-        plt.figure(figsize=(13, 6.5))
-
-        for i in range(NUM_POINT):
-            x = self.pstData[i, 0]
-            y = self.pstData[i, 1]
-            plt.plot(x, y, "bx")
-
-            if i >= 10:
-                plt.text(x - 40, y + 15, i, fontsize=12)
-            elif i >= 100:
-                plt.text(x - 0, y + 15, i, fontsize=12)
-            else:
-                plt.text(x - 15, y + 15, i, fontsize=12)
+    def plotCommon(self):
 
         string = "-" * 42 + "\n"
         string += "|" + " " * 5 + "0 -- 60: 研发区域" + " " * 18 + "|\n"
@@ -64,7 +48,7 @@ class PstDataSet:
         string += "|" + " " * 5 + "204 -- 215: 财务/总经理办公室" + " " * 6 + "|\n"
         string += "|" + " " * 5 + "216 -- 263: 行政办公区域" + " " * 11 + "|\n"
         string += "-" * 42 + "\n"
-        plt.text(4200, 1500, string, fontsize=12)
+        plt.text(4200, 1200, string, fontsize=12)
 
         plt.plot([self.pstData[60, 0] + 75, self.pstData[60, 0] + 75], [-50, self.pstData[60, 1] + 100])
         plt.plot([self.pstData[152, 0] + 135, self.pstData[152, 0] + 135], [-50, self.pstData[146, 1] + 100])
@@ -89,9 +73,75 @@ class PstDataSet:
         plt.axis("equal")
         plt.xlim((-50, 50 + np.max(self.pstData[:, 0])))
         plt.ylim((-50, 50 + np.max(self.pstData[:, 1])))
+
+    def plot(self) -> None:
+        """
+        打印采集点坐标图
+        :return:
+        """
+
+        plt.figure(figsize=(13, 6.5))
+
+        for i in range(NUM_POINT):
+            x = self.pstData[i, 0]
+            y = self.pstData[i, 1]
+            plt.plot(x, y, "bx")
+
+            if i >= 10:
+                plt.text(x - 40, y + 15, i, fontsize=12)
+            elif i >= 100:
+                plt.text(x - 0, y + 15, i, fontsize=12)
+            else:
+                plt.text(x - 15, y + 15, i, fontsize=12)
+
+        self.plotCommon()
+        plt.savefig("plot.png")
         plt.show()
 
-        plt.savefig("plot.png")
+    def plotMultiClasses(self, classes: list, file) -> None:
+        fig = plt.figure(figsize=(13, 6.5))
+        colors = ["r", "b", "y", "g", "k"]
+        dotShape = "x"
+
+        for i, clazz in enumerate(classes):
+            if i == len(classes) - 1:
+                color = colors[-1]
+                label = "unused"
+            else:
+                color = colors[i]
+                label = "class {}".format(i)
+            marker = color + dotShape
+
+            num = clazz[0]
+            x = self.pstData[num, 0]
+            y = self.pstData[num, 1]
+            plt.plot(x, y, marker, label=label)
+
+            if num >= 10:
+                plt.text(x - 40, y + 15, num, fontsize=12, color=color)
+            elif num >= 100:
+                plt.text(x - 0, y + 15, num, fontsize=12, color=color)
+            else:
+                plt.text(x - 15, y + 15, num, fontsize=12, color=color)
+
+            for j in range(1, len(clazz)):
+                num = clazz[j]
+                x = self.pstData[num, 0]
+                y = self.pstData[num, 1]
+                plt.plot(x, y, marker)
+
+                if num >= 10:
+                    plt.text(x - 40, y + 15, num, fontsize=12, color=color)
+                elif num >= 100:
+                    plt.text(x - 0, y + 15, num, fontsize=12, color=color)
+                else:
+                    plt.text(x - 15, y + 15, num, fontsize=12, color=color)
+
+            plt.legend(loc="upper left")
+
+        self.plotCommon()
+        plt.savefig(file, bbox_inches='tight', pad_inches=0)
+        plt.show()
 
 # usage
 # dataset = PstDataSet()

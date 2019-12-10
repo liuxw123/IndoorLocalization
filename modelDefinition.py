@@ -27,3 +27,12 @@ class ModelInterface(nn.Module, Common, metaclass=ABCMeta):
         :return:
         """
         pass
+
+    @abstractmethod
+    def hiddenLayerString(self) -> list:
+        """
+        获取模型的中间层字符串名称
+        :return:
+        """
+        pass
+

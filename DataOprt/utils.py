@@ -84,7 +84,7 @@ def match(pattern, string):
 def getDirectory(root):
     files = []
     for file in os.listdir(root):
-        if os.path.isdir(root + FILE_DELIMITER + file) and match(r'^[0-9a-zA-Z]+$', file):
+        if os.path.isdir(root + FILE_DELIMITER + file) and match(r'^[0-9a-zA-Z][0-9a-zA-Z_]+$', file):
             files.append(file)
     return files
 
