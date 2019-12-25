@@ -11,17 +11,22 @@ from commonInterface import Common
 
 class ResultLog(Common, metaclass=ABCMeta):
 
-    def __init__(self, key: str) -> None:
+    def __init__(self, key: str, debug=False) -> None:
         super().__init__()
         self.checkKey(key)
         self.log = {}
         self.logStr = ""
+        self.debug = debug
 
 
     def details(self):
         pass
 
     def write(self, filePath):
+
+        if self.debug:
+            return
+
         fw = open(filePath, "w+")
         fw.writelines(self.logStr)
         fw.close()

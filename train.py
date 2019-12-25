@@ -8,7 +8,7 @@
 from modelConfig import KEY
 from modelDefinitionImpl import PstModelV0M1
 from trainData import TrainData, collate
-from loggingImpl import LoggingImpl
+from loggingImpl import LoggingImplR
 
 from torch.utils.data import DataLoader
 from torch.nn import CrossEntropyLoss
@@ -18,14 +18,14 @@ import torch
 # parameters
 from values.strings import KEY_LOGGING_RESULT, KEY_LOGGING_MODEL, KEY_LOGGING_DATA, KEY_LOGGING_MODEL_BATCH, \
     KEY_LOGGING_MODEL_OPTIMIZER, KEY_LOGGING_MODEL_LR, KEY_LOGGING_MODEL_EPOCH, KEY_LOGGING_MODEL_LOSS_FUNCTION, \
-    KEY_LOGGING_RESULT_ACC, KEY_LOGGING_RESULT_LOSS, KEY_LOGGING_RESULT_MODEL_PATH, KEY_LOGGING_RESULT_MODEL_PARAMETER, \
+    KEY_LOGGING_RESULT_ACC, KEY_LOGGING_RESULT_LOSS, KEY_LOGGING_RESULT_MODEL_PARAMETER, \
     KEY_LOGGING_RESULT_FINAL_ACC, KEY_LOGGING_RESULT_FINAL_LOSS
 
 TRAIN_RATE = 0.9
 BATCH_SIZE = 32
 LR = 0.001
-EPOCH = 1000
-ADJUST_EPOCH = [200, 500]
+EPOCH = 700
+ADJUST_EPOCH = [350, 500]
 
 dataSet = TrainData(TRAIN_RATE, KEY)  # default is train phase
 dataLoader = DataLoader(dataSet, batch_size=BATCH_SIZE, shuffle=True, num_workers=0, collate_fn=collate)
@@ -35,7 +35,7 @@ lossFunc = CrossEntropyLoss()
 model = PstModelV0M1(KEY)
 optimizer = Adam(model.parameters(), lr=LR, weight_decay=0.0001)
 
-logger = LoggingImpl(KEY)
+logger = LoggingImplR(KEY)
 
 
 def adjustLearningRate(epoch):

@@ -98,17 +98,20 @@ class PstDataSet:
         plt.savefig("plot.png")
         plt.show()
 
-    def plotMultiClasses(self, classes: list, file) -> None:
+    def plotMultiClasses(self, classes: list, file, debug=False) -> None:
         fig = plt.figure(figsize=(13, 6.5))
         colors = ["r", "b", "y", "g", "c", "m", "k"]
-        dotShape = "x"
+        dotShapes = ["^", "+", "o", "p", "D", "x"]
+
 
         for i, clazz in enumerate(classes):
             if i == len(classes) - 1:
+                dotShape = dotShapes[-1]
                 color = colors[-1]
                 label = "unused"
             else:
                 color = colors[i]
+                dotShape = dotShapes[i]
                 label = "class {}".format(i)
             marker = color + dotShape
 
@@ -140,7 +143,10 @@ class PstDataSet:
             plt.legend(loc="upper left")
 
         self.plotCommon()
-        plt.savefig(file, bbox_inches='tight', pad_inches=0)
+        if debug:
+            plt.show()
+        else:
+            plt.savefig(file, bbox_inches='tight', pad_inches=0)
         # plt.show()
 
 # usage

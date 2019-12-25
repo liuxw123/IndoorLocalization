@@ -6,8 +6,7 @@
 # Github : https://github.com/liuxw123
 
 from torch.utils.data import Dataset
-
-from dataDefinitionImpl import DataDefinitionImplV0D2
+from dataDefinitionImplR import DataDefinitionImplRV0D1S1
 
 import torch
 import numpy as np
@@ -22,9 +21,12 @@ class TrainData(Dataset):
         super().__init__()
 
         # TODO choose right data process class
-        self.dataHolder = DataDefinitionImplV0D2(trainRate)
+        self.dataHolder = DataDefinitionImplRV0D1S1(trainRate)
 
         self.xTrain, self.yTrain, self.xTest, self.yTest = self.dataHolder.getData(key)
+
+        print("train data:{} samples".format(self.xTrain.shape[0]))
+        print("test data:{} samples".format(self.xTest.shape[0]))
 
         # training phase: train or test
         self.phase = None

@@ -4,6 +4,7 @@
 # IDE : PyCharm
 # Description : loggings的实现类
 # Github : https://github.com/liuxw123
+
 from DataOprt.plot import PstDataSet
 from DataOprt.utils import arrayString, getDirectory
 from loggings import ResultLog
@@ -40,6 +41,21 @@ class LoggingImpl(ResultLog):
         self.logStr += "time" + CONTENT_DELIMITER + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + LINE_BREAK
         self.logStr += LINE_BREAK
 
+    def classesString(self, classes: list):
+
+        unused = classes.pop()
+        for i, clazz in enumerate(classes):
+            self.logStr += " " * LOGGING_BLANK_NUM + "class {}: {} dots ".format(i, len(clazz)) + arrayString(
+                clazz) + LINE_BREAK
+
+        self.logStr += " " * LOGGING_BLANK_NUM + "unused: {} dots ".format(len(unused)) + arrayString(
+            unused) + LINE_BREAK
+        classes.append(unused)
+
+    @staticmethod
+    def convertClasses(classes: list):
+        return classes
+
     def loggingData(self, plotFile: str):
         left = (LOGGING_EQUALS_DELIMITER - len(KEY_LOGGING_DATA)) // 2
         right = LOGGING_EQUALS_DELIMITER - len(KEY_LOGGING_DATA) - left
@@ -57,13 +73,9 @@ class LoggingImpl(ResultLog):
 
         # TODO 画图显示
         classes = info[KEY_LOGGING_DATA_CLASSES]
-        self.plot.plotMultiClasses(classes, plotFile)
-
-        unused = classes.pop()
-        for i, clazz in enumerate(classes):
-            self.logStr += " " * LOGGING_BLANK_NUM + "class {}: {} dots ".format(i, len(clazz)) + arrayString(clazz) + LINE_BREAK
-
-        self.logStr += " " * LOGGING_BLANK_NUM + "unused: {} dots ".format(len(unused)) + arrayString(unused) + LINE_BREAK
+        self.classesString(classes)
+        classes = self.convertClasses(classes)
+        self.plot.plotMultiClasses(classes, plotFile, debug=self.debug)
 
         self.logStr += EQUALS_DELIMITER * LOGGING_EQUALS_DELIMITER + LINE_BREAK
         self.logStr += LINE_BREAK
@@ -106,15 +118,15 @@ class LoggingImpl(ResultLog):
 
         self.logStr += KEY_LOGGING_RESULT_MODEL_PATH + CONTENT_DELIMITER + modelPath + LINE_BREAK
 
-        torch.save(info[KEY_LOGGING_RESULT_MODEL_PARAMETER], modelPath)
+        if not self.debug:
+            torch.save(info[KEY_LOGGING_RESULT_MODEL_PARAMETER], modelPath)
 
         self.logStr += EQUALS_DELIMITER * LOGGING_EQUALS_DELIMITER + LINE_BREAK
         self.logStr += LINE_BREAK
 
-    @staticmethod
-    def createResultDirectory():
+    def createResultDirectory(self):
 
-        if not os.path.exists(PATH_RESULT):
+        if not os.path.exists(PATH_RESULT) and not self.debug:
             os.mkdir(PATH_RESULT)
 
         dirs = getDirectory(PATH_RESULT)
@@ -139,7 +151,8 @@ class LoggingImpl(ResultLog):
 
     def logging(self):
         path = self.createResultDirectory()
-        os.mkdir(PATH_RESULT + path)
+        if not self.debug:
+            os.mkdir(PATH_RESULT + path)
         self.loggingBefore()
         self.loggingData(PATH_RESULT + path + PATH_RESULT_PNG)
         self.loggingModel()
@@ -156,3 +169,34 @@ class LoggingImpl(ResultLog):
             return
         else:
             raise ValueError(VERSION_NOT_SUPPORTED)
+
+
+class LoggingImplR(LoggingImpl):
+
+    @staticmethod
+    def convertClasses(classes: list):
+
+        newClasses = []
+        unused = classes.pop()
+        for i, clazz in enumerate(classes):
+            temp = clazz[0]
+            temp.extend(clazz[1])
+            temp.sort()
+            newClasses.append(temp)
+
+        newClasses.append(unused)
+
+        return newClasses
+
+    def classesString(self, classes: list):
+        unused = classes.pop()
+        for i, clazz in enumerate(classes):
+            self.logStr += " " * LOGGING_BLANK_NUM + "class {}.".format(i) + " train ({} dots): ".format(
+                len(clazz[0])) + arrayString(clazz[0]) + LINE_BREAK + " " * (
+                                       LOGGING_BLANK_NUM * 3) + "test ({} dots): ".format(len(clazz[1])) + arrayString(
+                clazz[1]) + LINE_BREAK
+
+        self.logStr += " " * LOGGING_BLANK_NUM + "unused: {} dots ".format(len(unused)) + arrayString(
+            unused) + LINE_BREAK
+
+        classes.append(unused)

@@ -22,6 +22,10 @@ class DataDefinitionImplV0(DataDefinition):
     v0： version. 说明这是一个多分类定义模型
     3 ： subVersion. 三分类
     """
+
+    def checkAllDotsUsedInformation(self):
+        pass
+
     KEY = "v0-3-x-x"
 
     def details(self):
@@ -44,6 +48,27 @@ class DataDefinitionImplV0(DataDefinition):
         self.dataset = DataSet().getData(dim=3)  # 264 * 10 * 16
         self.shuffle = shuffle
         self.classes = None
+
+    @staticmethod
+    def getUnused(labelInfo: list) -> list:
+        """
+        获取未使用到的数据
+        :param labelInfo: 使用到的位置点分类数据
+        :return:
+        """
+        unused = []
+
+        for i in range(NUM_POINT):
+
+            flag = True
+            for clazz in labelInfo:
+                if clazz.__contains__(i):
+                    flag = False
+                    break
+            if flag:
+                unused.append(i)
+
+        return unused
 
     def checkKey(self, key1: str, key2: str) -> None:
         """
@@ -82,20 +107,7 @@ class DataDefinitionImplV0(DataDefinition):
         class2 = [x for x in range(157, 204)]
         class3 = [x for x in range(216, 264)]
 
-        unused = []
-
-        for i in range(NUM_POINT):
-
-            if class1.__contains__(i):
-                continue
-
-            if class2.__contains__(i):
-                continue
-
-            if class3.__contains__(i):
-                continue
-
-            unused.append(i)
+        unused = self.getUnused([class1, class2, class3])
 
         self.classes = [class1, class2, class3, unused]
 

@@ -33,3 +33,11 @@ class DataDefinition(Common, metaclass=ABCMeta):
         :return: 返回经过此函数处理后的数据，即训练数据
         """
         pass
+
+    @abstractmethod
+    def checkAllDotsUsedInformation(self):
+        """
+        核对数据集
+        :return:
+        """
+        pass
